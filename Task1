@@ -1,1 +1,117 @@
+using System;
+
+namespace Test
+{
+    class Car
+    {
+        private readonly string type;
+        private readonly double averageFuelUsage;
+        private readonly double fuelTankCapacity;
+        private readonly double velocityInKmPerHour;
+        public double currentFuelAmount
+        {
+            get { return currentFuelAmount; }
+            set { if (currentFuelAmount < 0) throw new ArgumentException(); }
+        }
+
+        public Car (double averageFuelUsage, double fuelTankCapacity, double velocityInKmPerHour, string type = "car")
+        {
+            if (averageFuelUsage < 0 || fuelTankCapacity < 0 || velocityInKmPerHour < 0) throw new ArgumentException();
+            this.averageFuelUsage = averageFuelUsage;
+            this.fuelTankCapacity = fuelTankCapacity;
+            this.velocityInKmPerHour = velocityInKmPerHour;
+        }
+
+        public virtual double FindMovingDistance (double currentFuelAmount = -1)
+        {
+            if (currentFuelAmount == -1) currentFuelAmount = fuelTankCapacity;
+            if (currentFuelAmount ==0) return 0;
+            if (currentFuelAmount < 0) throw new ArgumentException();
+            return currentFuelAmount / averageFuelUsage * velocityInKmPerHour;
+        }
+
+        public Type GetInfo(Car car)
+        {
+            return car.GetType();
+        }
+
+        public double FindTime(double currentFuelAmount, double distanceInKm)
+        {
+            if (currentFuelAmount < 0) throw new ArgumentException();
+            if (currentFuelAmount == 0 ||
+                currentFuelAmount / averageFuelUsage * velocityInKmPerHour < distanceInKm)
+                throw new Exception("Невозможно добраться до цели с таким количеством топлива");
+            return distanceInKm / velocityInKmPerHour;
+        }
+
+
+
+    }
+
+    class SportCar : Car
+    {
+        public SportCar(double averageFuelUsage, double fuelTankCapacity, double velocity, string type = "Sportcar")
+                    : base(averageFuelUsage, fuelTankCapacity, velocity, type)
+        {
+
+        }
+    }
+
+    class PassengerCar : Car 
+    {
+        const double PassengerDisturbency = 0.06;
+
+        private readonly int passengerCapacity;
+        public int CurrentPassengerAmount
+        {
+           get { return CurrentPassengerAmount; }
+           set { if (CurrentPassengerAmount < passengerCapacity) throw new ArgumentException(); }
+        }
+
+        public PassengerCar(double averageFuelUsage, double fuelTankCapacity, double velocity, int passengerCapacity, string type = "Passenger car")
+                :base(averageFuelUsage, fuelTankCapacity, velocity, type)
+        {
+            if (passengerCapacity < 0) throw new ArgumentException();
+            this.passengerCapacity = passengerCapacity;
+        }
+
+        public override double FindMovingDistance(double currentFuelAmount = -1)
+        {
+            return base.FindMovingDistance(currentFuelAmount) * (1 + CurrentPassengerAmount * PassengerDisturbency);
+        }
+
+        public Type GetInfo(PassengerCar car)
+        {
+            return car.GetType();
+        }
+    }
+
+    class TransportCar : Car
+    {
+        private readonly double loadCapacity;
+        public double currentCapacity
+        {
+            get { return currentCapacity; }
+            set { if (currentCapacity < 0 || currentCapacity > loadCapacity) throw new ArgumentException(); }
+        }
+
+        public TransportCar(double averageFuelUsage, double fuelTankCapacity, double velocity, double loadCapacity,double currentCapacity, string type = "Transport car")
+                    : base(averageFuelUsage, fuelTankCapacity, velocity, type)
+        {
+            if (loadCapacity < 0) throw new ArgumentException();
+            this.loadCapacity = loadCapacity;
+            this.currentCapacity = currentCapacity;
+        }
+
+        public Type GetInfo(TransportCar car)
+        {
+            return car.GetType();
+        }
+
+        public override double FindMovingDistance(double currentFuelAmount = -1)
+        {
+            return base.FindMovingDistance(currentFuelAmount) * (1 + Math.Truncate(currentCapacity / 200) * 0.04);
+        }
+    }
+}
 
