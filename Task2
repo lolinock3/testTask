@@ -1,0 +1,17 @@
+CREATE TABLE Customers (
+  id INT PRIMARY KEY IDENTITY (1,1),
+  name VARCHAR(40) NOT NULL
+);
+CREATE UNIQUE INDEX indC on Customers(name);
+
+CREATE TABLE Orders (
+  id INT PRIMARY KEY IDENTITY (1,1),
+  CustomerId INT FOREIGN KEY REFERENCES Customers(id) ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX indC on Orders(CustomerId);
+
+INSERT INTO Customers (name) VALUES ('Max'), ('Pavel'), ('Ivan'), ('Leonid');
+
+SELECT c.name 'Customers'
+FROM Customers as c, Orders as o
+Where c.id != o.CustomerId;
